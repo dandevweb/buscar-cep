@@ -4,82 +4,68 @@ declare(strict_types=1);
 
 namespace App\Http\Livewire;
 
+use App\Actions\AddressGetPropertiesAction;
+use App\Actions\AddressStoreAction;
 use App\Models\Address;
 use Livewire\Component;
 use WireUi\Traits\Actions;
-use Illuminate\Support\Facades\Http;
-use App\Http\Livewire\Traits\AddressPropertiesRulesTrait;
-use App\Http\Livewire\Traits\AddressPropertiesMessagesTrait;
+use App\Services\ViaCep\ViaCepService;
+use App\Http\Livewire\Traits\AddressPropertiesRulesValidationTrait;
+use App\Http\Livewire\Traits\AddressPropertiesValidationMessagesTrait;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class SearchZipcode extends Component
 {
-    use Actions, AddressPropertiesRulesTrait, AddressPropertiesMessagesTrait;
+    use Actions, AddressPropertiesRulesValidationTrait, AddressPropertiesValidationMessagesTrait;
 
-    public string $zipcode = '';
-    public string $street = '';
-    public string $neighborhood = '';
-    public string $city = '';
-    public string $state = '';
-
+    public array $data = [];
     public array $addresses = [];
 
-    public function updatedZipcode(string $value)
+    public function updated(string $key, string $value): void
     {
-        $response = Http::get("https://viacep.com.br/ws/{$value}/json/")->json();
-
-        $this->zipcode = $response['cep'];
-        $this->street = $response['logradouro'];
-        $this->neighborhood = $response['bairro'];
-        $this->city = $response['localidade'];
-        $this->state = $response['uf'];
+        if ($key === 'data.zipcode') {
+            $this->data = ViaCepService::handle($value);
+        }
     }
 
     public function save(): void
     {
         $this->validate();
 
-        Address::updateOrCreate(
-            [
-                'zipcode' => $this->zipcode,
-            ],
-            [
-                'street' => $this->street,
-                'neighborhood' => $this->neighborhood,
-                'city' => $this->city,
-                'state' => $this->state,
-            ]
-        );
+        AddressStoreAction::save($this->data);
 
-        $this->render();
-
-        $this->notification()->success('Salvar Endereço', 'O Endereço foi salvo com sucesso!');
+        $this->showNotification('Salvar Endereço', 'O Endereço foi salvo com sucesso!');
 
         $this->resetExcept('addresses');
     }
 
     public function edit(string $id)
     {
-        $address = Address::find($id);
-
-        $this->zipcode = $address->zipcode;
-        $this->street = $address->street;
-        $this->neighborhood = $address->neighborhood;
-        $this->city = $address->city;
-        $this->state =  $address->state;
+        $this->data = AddressGetPropertiesAction::handle($id);
     }
 
     public function remove(string $id)
     {
-        $address = Address::find($id);
+        Address::find($id)?->delete();
 
-        $address?->delete();
-
-        $this->render();
-
-        $this->notification()->success('Excluído', 'Endereço excluído com sucesso!');
+        $this->showNotification('Excluído', 'Endereço excluído com sucesso!');
     }
 
-    public function render()
+    private function showNotification(string $title, string $message): void
+    {
+        $this->render();
+
+        $this->notification()->success($title, $message);
+    }
+
+    public function mount(): void
+    {
+        $this->data = AddressGetPropertiesAction::getEmptyProperties();
+    }
+
+    public function render(): Factory|View|Application
     {
         $this->addresses = Address::all()->toArray();
 

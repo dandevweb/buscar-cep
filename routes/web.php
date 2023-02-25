@@ -15,3 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', SearchZipcode::class)->name('search-zipcode');
+
+Route::get('/index', [App\Http\Controllers\PdfController::class, 'index']);
+Route::get('/export-pdf', [App\Http\Controllers\PdfController::class, 'exportPdf']);

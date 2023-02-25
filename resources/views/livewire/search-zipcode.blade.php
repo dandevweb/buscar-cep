@@ -4,36 +4,36 @@
         <h1>Buscador de cep</h1>
         <div class="flex flex-col">
             <label for="zipcode">CEP</label>
-            <input class="border" id="zipcode" type="text" wire:model.lazy="zipcode">
-            @error('zipcode')
+            <input class="border" id="zipcode" type="text" wire:model.lazy="data.zipcode">
+            @error('data.zipcode')
                 <span class="text-red-500">{{ $message }}</span>
             @enderror
         </div>
         <div class="flex flex-col">
             <label for="street">Logradouro</label>
-            <input class="border" id="street" type="text" wire:model="street">
-            @error('street')
+            <input class="border" id="street" type="text" wire:model="data.street">
+            @error('data.street')
                 <span class="text-red-500">{{ $message }}</span>
             @enderror
         </div>
         <div class="flex flex-col">
             <label for="neighborhood">Bairro</label>
-            <input class="border" id="neighborhood" type="text" wire:model="neighborhood">
-            @error('neighborhood')
+            <input class="border" id="neighborhood" type="text" wire:model="data.neighborhood">
+            @error('data.neighborhood')
                 <span class="text-red-500">{{ $message }}</span>
             @enderror
         </div>
         <div class="flex flex-col">
             <label for="city">Cidade</label>
-            <input class="border" id="city" type="text" wire:model="city">
-            @error('city')
+            <input class="border" id="city" type="text" wire:model="data.city">
+            @error('data.city')
                 <span class="text-red-500">{{ $message }}</span>
             @enderror
         </div>
         <div class="flex flex-col">
             <label for="state">Estado</label>
-            <input class="border" id="state" type="text" wire:model="state">
-            @error('state')
+            <input class="border" id="state" type="text" wire:model="data.state">
+            @error('data.state')
                 <span class="text-red-500">{{ $message }}</span>
             @enderror
         </div>
