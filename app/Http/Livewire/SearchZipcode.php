@@ -15,13 +15,13 @@ use App\Http\Livewire\Traits\AddressPropertiesValidationMessagesTrait;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Collection;
 
 class SearchZipcode extends Component
 {
     use Actions, AddressPropertiesRulesValidationTrait, AddressPropertiesValidationMessagesTrait;
 
     public array $data = [];
-    public array $addresses = [];
 
     public function updated(string $key, string $value): void
     {
@@ -55,9 +55,14 @@ class SearchZipcode extends Component
 
     private function showNotification(string $title, string $message): void
     {
-        $this->render();
-
         $this->notification()->success($title, $message);
+    }
+
+    public function getAddressProperty(): ?Collection
+    {
+        return Address::all();
+        // return Address::paginate(2);
+
     }
 
     public function mount(): void
@@ -67,8 +72,6 @@ class SearchZipcode extends Component
 
     public function render(): Factory|View|Application
     {
-        $this->addresses = Address::all()->toArray();
-
         return view('livewire.search-zipcode');
     }
 }

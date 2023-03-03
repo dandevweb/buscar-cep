@@ -8,6 +8,7 @@
     <title>{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <livewire:styles />
+    @powerGridStyles
 </head>
 
 <body>
@@ -15,6 +16,7 @@
 
     <livewire:scripts />
     <wireui:scripts />
+    @powerGridScripts
     <script src="//unpkg.com/alpinejs" defer></script>
 </body>
 
